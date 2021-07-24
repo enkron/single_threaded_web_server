@@ -17,13 +17,21 @@ fn main() {
     }
 }
 
-// Request
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 1024]; // declare a buffer on the stack
 
+    // Request
     stream.read(&mut buffer).unwrap(); // read bytes from TcpStream and
                                        // put them in the buffer
 
+    let response = "HTTP/1.1 200 OK\r\n\r\n"; // holds success message's data
+
     // convert the bytes in the buffer to a string and print it
-    println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
+    //println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
+
+    // Response
+    stream.write(response.as_bytes()).unwrap(); // sends bytes directly
+                                                // down the connection
+    stream.flush().unwrap(); // prevent the program from continuing until
+                             // all the bytes are written to the connection.
 }
