@@ -26,21 +26,27 @@ fn handle_connection(mut stream: TcpStream) {
     stream.read(&mut buffer).unwrap(); // read bytes from TcpStream and
                                        // put them in the buffer
 
-    let contents = fs::read_to_string("hello.html").unwrap();
+    let get = b"GET / HTTP/1.1\r\n";
 
-    // holds success message's data
-    let response = format!(
-        "HTTP/1.1 200 OK\r\nContent-Lenght: {}\r\n\r\n{}",
-        contents.len(),
-        contents
-    );
+    if buffer.starts_with(get) {
+        let contents = fs::read_to_string("hello.html").unwrap();
 
-    // convert the bytes in the buffer to a string and print it
-    //println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
+        // holds success message's data
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Lenght: {}\r\n\r\n{}",
+            contents.len(),
+            contents
+        );
 
-    // Response
-    stream.write(response.as_bytes()).unwrap(); // sends bytes directly
-                                                // down the connection
-    stream.flush().unwrap(); // prevent the program from continuing until
-                             // all the bytes are written to the connection.
+        // convert the bytes in the buffer to a string and print it
+        //println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
+
+        // Response
+        stream.write(response.as_bytes()).unwrap(); // sends bytes directly
+                                                    // down the connection
+        stream.flush().unwrap(); // prevent the program from continuing until
+                                 // all the bytes are written to the connection.
+    } else {
+        // some other request
+    }
 }
