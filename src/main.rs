@@ -1,3 +1,5 @@
+/// Hand-coded an http request/response
+use std::fs;
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
 
@@ -24,7 +26,14 @@ fn handle_connection(mut stream: TcpStream) {
     stream.read(&mut buffer).unwrap(); // read bytes from TcpStream and
                                        // put them in the buffer
 
-    let response = "HTTP/1.1 200 OK\r\n\r\n"; // holds success message's data
+    let contents = fs::read_to_string("hello.html").unwrap();
+
+    // holds success message's data
+    let response = format!(
+        "HTTP/1.1 200 OK\r\nContent-Lenght: {}\r\n\r\n{}",
+        contents.len(),
+        contents
+    );
 
     // convert the bytes in the buffer to a string and print it
     //println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
