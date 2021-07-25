@@ -1,5 +1,5 @@
 /// Hand-coded an http request/response
-use std::fs;
+use std::fs::{self, read_to_string};
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
 
@@ -47,6 +47,16 @@ fn handle_connection(mut stream: TcpStream) {
         stream.flush().unwrap(); // prevent the program from continuing until
                                  // all the bytes are written to the connection.
     } else {
-        // some other request
+        let status_line = "HTTP/1.1 404 NOT FOUND";
+        let contents = fs::read_to_string("404.html").unwrap();
+
+        let response = format!(
+            "{}\r\nContent-Length: {}\r\n\r\n{}",
+            status_line,
+            contents.len(),
+            contents
+        );
+        stream.write(response.as_bytes()).unwrap();
+        stream.flush().unwrap();
     }
 }
