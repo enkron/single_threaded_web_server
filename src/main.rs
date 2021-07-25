@@ -1,5 +1,5 @@
 /// Hand-coded an http request/response
-use std::fs::{self, read_to_string};
+use std::fs;
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
 
