@@ -1,7 +1,7 @@
 /// Hand-coded an http request/response
-use std::fs;
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
+use std::{fs, thread, time::Duration};
 
 // Listen at the addr 127.0.0.1:7878 for incoming TCP streams.
 fn main() {
@@ -27,8 +27,12 @@ fn handle_connection(mut stream: TcpStream) {
                                        // put them in the buffer
 
     let get = b"GET / HTTP/1.1\r\n";
+    let sleep = b"GET /sleep HTTP/1.1\r\n";
 
     let (status_line, filename) = if buffer.starts_with(get) {
+        ("HTTP/1.1 200 OK", "hello.html")
+    } else if buffer.starts_with(sleep) {
+        thread::sleep(Duration::from_secs(5));
         ("HTTP/1.1 200 OK", "hello.html")
     } else {
         ("HTTP/1.1 404 NOT FOUND", "404.html")
