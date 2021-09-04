@@ -9,13 +9,20 @@ fn main() {
     // it returns a new TcpListener instance.
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
 
+    // Create a new thread pool with a configurable number of threads
+    let pool = ThreadPool::new(4);
+
     // `incoming` method of TcpListener returns an iterator
     // that gives us a sequence of TcpStream type streams.
     // A single stream represents an open client <--> server connection.
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
-        handle_connection(stream);
+        // pool.execute has a similar interface as thread::spawn
+        // it takes a closure and gives it to a thread in the pool to run
+        pool.execute(|| {
+            handle_connection(stream);
+        });
     }
 }
 
@@ -32,7 +39,7 @@ fn handle_connection(mut stream: TcpStream) {
     let (status_line, filename) = if buffer.starts_with(get) {
         ("HTTP/1.1 200 OK", "hello.html")
     } else if buffer.starts_with(sleep) {
-        thread::sleep(Duration::from_secs(5));
+        thread::sleep(Duration::from_secs(10));
         ("HTTP/1.1 200 OK", "hello.html")
     } else {
         ("HTTP/1.1 404 NOT FOUND", "404.html")
