@@ -1,6 +1,8 @@
 /// Hand-coded an http request/response
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
+
+use single_threaded_web_server::ThreadPool;
 use std::{fs, thread, time::Duration};
 
 // Listen at the addr 127.0.0.1:7878 for incoming TCP streams.
